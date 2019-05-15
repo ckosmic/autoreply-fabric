@@ -25,6 +25,12 @@ public class AutoReplyMixin {
     }
 
     private String getFormattedMessage(String searchTerm) {
+        String[] searchWords = searchTerm.split(" ");
+        searchTerm = "";
+        for(int i = 1; i < searchWords.length; i++) {
+            searchTerm = searchWords + " ";
+        }
+
         String[] ins = {
                 "anyone selling",
                 "anyone have",
@@ -47,7 +53,6 @@ public class AutoReplyMixin {
         };
 
         for(int i = 0; i < Helper.chatMessages.chatTerms.size(); i++) {
-            System.out.println(Helper.chatMessages.chatTerms.get(i).terms[0]);
             for(int j = 0; j < Helper.chatMessages.chatTerms.get(i).terms.length; j++) {
                 for(int k = 0; k < ins.length; k++) {
                     if(searchTerm.contains(ins[k]) && searchTerm.contains(Helper.chatMessages.chatTerms.get(i).terms[j])) {
