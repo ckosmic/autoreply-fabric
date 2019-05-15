@@ -28,7 +28,7 @@ public class AutoReplyMixin {
         String[] searchWords = searchTerm.split(" ");
         searchTerm = "";
         for(int i = 1; i < searchWords.length; i++) {
-            searchTerm = searchWords + " ";
+            searchTerm = searchTerm + searchWords[i] + " ";
         }
 
         String[] ins = {
