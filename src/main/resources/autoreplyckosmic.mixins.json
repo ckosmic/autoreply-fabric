@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.ckosmic.autoreply.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "InitializeMixin",
+    "AutoReplyMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
