@@ -6,7 +6,8 @@
   ],
   "client": [
     "InitializeMixin",
-    "AutoReplyMixin"
+    "AutoReplyMixin",
+    "MixinTick"
   ],
   "injectors": {
     "defaultRequire": 1

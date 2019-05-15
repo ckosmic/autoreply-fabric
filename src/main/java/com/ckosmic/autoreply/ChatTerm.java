@@ -1,10 +1,10 @@
 package com.ckosmic.autoreply;
 
 public class ChatTerm {
-    public String[] terms;
+    public String term;
     public String itemName;
-    public ChatTerm(String[] tms, String itmNm) {
-        terms = tms;
-        itemName = itmNm;
+    public ChatTerm(String term, String itemName) {
+        this.term = term;
+        this.itemName = itemName;
     }
 }

@@ -7,13 +7,15 @@ public class ChatMessages {
     public ArrayList<ChatTerm> chatTerms = new ArrayList<ChatTerm>();
 
     public String getRandomOutMessage() {
-        String[] msgs = {
-                " can be found at /warp Noctis!",
-                " are at /warp Noctis!",
-                " at /warp Noctis!",
-        };
+        String[] msgs = ExampleMod.config.outs.toArray(new String[0]);
 
-        Random rand = new Random();
-        return msgs[rand.nextInt(msgs.length-1)];
+        if(msgs.length > 1) {
+            Random rand = new Random();
+            return msgs[rand.nextInt(msgs.length - 1)];
+        } else if(msgs.length == 1) {
+            return msgs[0];
+        } else {
+            return "";
+        }
     }
 }

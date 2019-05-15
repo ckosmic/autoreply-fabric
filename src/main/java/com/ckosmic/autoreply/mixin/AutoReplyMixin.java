@@ -1,7 +1,9 @@
 package com.ckosmic.autoreply.mixin;
 
+import com.ckosmic.autoreply.ExampleMod;
 import com.ckosmic.autoreply.Helper;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,44 +22,27 @@ public class AutoReplyMixin {
         String formatted = getFormattedMessage(message);
 
         if(formatted.length() > 0 && !message.contains("noctis") && !message.contains("[shop]")) {
-            MinecraftClient.getInstance().player.sendChatMessage(formatted);
+            Helper.printMessage(formatted);
         }
     }
 
     private String getFormattedMessage(String searchTerm) {
         String[] searchWords = searchTerm.split(" ");
         searchTerm = "";
-        for(int i = 1; i < searchWords.length; i++) {
+        for (int i = 1; i < searchWords.length; i++) {
             searchTerm = searchTerm + searchWords[i] + " ";
         }
 
-        String[] ins = {
-                "anyone selling",
-                "anyone have",
-                "anyone sell",
-                "anyone got",
-                "who has",
-                "who sells",
-                "whos selling",
-                "who's selling",
-                "whos got",
-                "who's got",
-                "shop have",
-                "warp have",
-                "shop selling",
-                "warp selling",
-                "shop sell",
-                "warp sell",
-                "shop has",
-                "warp has",
-        };
+        String[] ins = ExampleMod.config.ins.toArray(new String[0]);
 
-        for(int i = 0; i < Helper.chatMessages.chatTerms.size(); i++) {
-            for(int j = 0; j < Helper.chatMessages.chatTerms.get(i).terms.length; j++) {
-                for(int k = 0; k < ins.length; k++) {
-                    if(searchTerm.contains(ins[k]) && searchTerm.contains(Helper.chatMessages.chatTerms.get(i).terms[j])) {
-                        return Helper.chatMessages.chatTerms.get(i).itemName + Helper.chatMessages.getRandomOutMessage();
-                    }
+        for (int i = 0; i < Helper.chatMessages.chatTerms.size(); i++) {
+            String term = Helper.chatMessages.chatTerms.get(i).term;
+            String itemName = Helper.chatMessages.chatTerms.get(i).itemName;
+            for (int k = 0; k < ins.length; k++) {
+                if (searchTerm.contains(ins[k]) && searchTerm.contains(term)) {
+                    String out = Helper.chatMessages.getRandomOutMessage();
+                    out = out.replace("[item]", itemName);
+                    return out;
                 }
             }
         }
