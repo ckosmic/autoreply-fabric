@@ -19,6 +19,9 @@
   "environment": "*",
   "entrypoints": {
     "main": [
+
+    ],
+    "client": [
       "com.ckosmic.autoreply.ExampleMod"
     ]
   },

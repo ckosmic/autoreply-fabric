@@ -3,9 +3,17 @@ package com.ckosmic.autoreply;
 import com.mojang.brigadier.Command;
 import io.github.cottonmc.cotton.config.ConfigManager;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
+import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.StringTextComponent;
+import net.minecraft.text.TextComponent;
+import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
@@ -17,33 +25,37 @@ import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static net.minecraft.server.command.CommandManager.argument;
 
-public class ExampleMod implements ModInitializer {
+public class ExampleMod implements ClientModInitializer {
 	public static AutoReplyConfig config;
+	private static FabricKeyBinding keyBinding;
 
 	@Override
-	public void onInitialize() {
+	public void onInitializeClient() {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
-
-		/*CommandRegistry.INSTANCE.register(false, (dispatcher) -> dispatcher.register(
-				CommandManager.literal("arpertick")
-						.then(argument("ticks", integer())
-							.executes(c -> {
-								c.getSource().sendFeedback(new StringTextComponent("Command works (" + getInteger(c, "test") + ")!"), false);
-								return Command.SINGLE_SUCCESS;
-							}))
-							.executes(c -> {
-								c.getSource().sendFeedback(new StringTextComponent("Command works with no arguments!"), false);
-								return Command.SINGLE_SUCCESS;
-							})
-		));*/
 
 		config = ConfigManager.loadConfig(AutoReplyConfig.class);
 
 		registerCommands();
 
 		Helper.setupChatMessages();
+
+		KeyBindingRegistry.INSTANCE.addCategory("ckosmic.autoreply");
+		keyBinding = FabricKeyBinding.Builder.create(
+				new Identifier("ckosmic:autoreply"),
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_R,
+				"ckosmic.autoreply"
+		).build();
+		KeyBindingRegistry.INSTANCE.register(keyBinding);
+
+		ClientTickCallback.EVENT.register(e -> {
+			if(keyBinding.wasPressed()) {
+				arreload();
+				e.player.addChatMessage(new StringTextComponent("AutoReply config reloaded."), false);
+			}
+		});
 	}
 
 	private void registerCommands() {
@@ -90,7 +102,7 @@ public class ExampleMod implements ModInitializer {
 									return Command.SINGLE_SUCCESS;
 								}))
 		));
-		//aradditem [Item Name] [Trigger term]
+		//aradditem [Item Name] [Trigger Term]
 		CommandRegistry.INSTANCE.register(false, (dispatcher) -> dispatcher.register(
 				CommandManager.literal("araddterm")
 						.then(argument("Item Name", string())
@@ -125,15 +137,31 @@ public class ExampleMod implements ModInitializer {
 									return Command.SINGLE_SUCCESS;
 								}))
 		));
+		//arreload
 		CommandRegistry.INSTANCE.register(false, (dispatcher) -> dispatcher.register(
 				CommandManager.literal("arreload")
 						.executes(c -> {
-							config = ConfigManager.loadConfig(AutoReplyConfig.class);
-							Helper.setupChatMessages();
+							arreload();
 							c.getSource().sendFeedback(new StringTextComponent("AutoReply config reloaded."), false);
 							return Command.SINGLE_SUCCESS;
 						})
 		));
+		//araddshopitem [Item Name] [Quantity] [Price]
+		CommandRegistry.INSTANCE.register(false, (dispatcher) -> dispatcher.register(
+				CommandManager.literal("araddshopitem")
+						.then(argument("Item Name", string()).then(argument("Quantity", string()).then(argument("Price", string())
+						.executes(c -> {
+							config.shopItems.add(getString(c, "Item Name") + "|" + getString(c, "Quantity") + "|$" + getString(c, "Price"));
+							ConfigManager.saveConfig(config, "AutoReplyConfigFile");
+							c.getSource().sendFeedback(new StringTextComponent("Added " + getString(c, "Item Name") + " to shop stock."), false);
+							return Command.SINGLE_SUCCESS;
+						}))))
+		));
+	}
+
+	private void arreload() {
+		config = ConfigManager.loadConfig(AutoReplyConfig.class);
+		Helper.setupChatMessages();
 	}
 
 	private String[] addToArray(String[] array, String element) {

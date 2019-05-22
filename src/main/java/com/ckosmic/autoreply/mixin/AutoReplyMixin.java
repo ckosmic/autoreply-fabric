@@ -23,6 +23,18 @@ public class AutoReplyMixin {
 
         if(formatted.length() > 0 && !message.contains("noctis") && !message.contains("[shop]")) {
             Helper.printMessage(formatted);
+        } else if(message.contains("->") && message.contains("!price")) {
+            String[] parts = message.split(" ");
+            String itemName = "";
+            boolean priceFound = false;
+            for(int i = 0; i < parts.length; i++) {
+                if(priceFound)
+                    itemName += parts[i] + " ";
+                if(parts[i].contains("!price"))
+                    priceFound = true;
+            }
+            System.out.println(itemName);
+            Helper.printMessage("/r " + getPriceOfItem(itemName));
         }
     }
 
@@ -47,6 +59,21 @@ public class AutoReplyMixin {
             }
         }
         return "";
+    }
+
+    private String getPriceOfItem(String itemName) {
+        String[] stock = ExampleMod.config.shopItems.toArray(new String[0]);
+        String[] itemNameParts = itemName.split(" ");
+
+        for(int i = 0; i < stock.length; i++) {
+            String[] parts = stock[i].split("\\|");
+            for(int j = 0; j < itemNameParts.length; j++) {
+                if (parts[0].toLowerCase().contains(itemNameParts[j].toLowerCase())) {
+                    return parts[1] + " " + parts[0] + " go for " + parts[2] + " at /warp Noctis.";
+                }
+            }
+        }
+        return "Sorry, that item is not carried at /warp Noctis.";
     }
 
 }

@@ -15,4 +15,5 @@ public class AutoReplyConfig {
     public ArrayList<String> terms = new ArrayList<>();
     public ArrayList<String> ins = new ArrayList<>();
     public ArrayList<String> outs = new ArrayList<>();
+    public ArrayList<String> shopItems = new ArrayList<>();
 }
