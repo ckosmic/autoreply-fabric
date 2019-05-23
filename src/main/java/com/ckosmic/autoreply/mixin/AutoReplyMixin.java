@@ -23,7 +23,7 @@ public class AutoReplyMixin {
         boolean blacklisted = false;
 
         for(int i = 0; i < ExampleMod.config.blacklist.size(); i++) {
-            if(message.contains(ExampleMod.config.blacklist.get(i))) {
+            if(message.toLowerCase().contains(ExampleMod.config.blacklist.get(i).toLowerCase())) {
                 blacklisted = true;
                 break;
             }
