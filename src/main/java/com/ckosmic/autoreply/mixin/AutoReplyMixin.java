@@ -20,8 +20,15 @@ public class AutoReplyMixin {
         String message = cir.getReturnValue().getFormattedText().toLowerCase();
 
         String formatted = getFormattedMessage(message);
+        boolean blacklisted = false;
 
-        if(formatted.length() > 0 && !message.contains("noctis") && !message.contains("[shop]")) {
+        for(int i = 0; i < ExampleMod.config.blacklist.size(); i++) {
+            if(message.contains(ExampleMod.config.blacklist.get(i))) {
+                blacklisted = true;
+                break;
+            }
+        }
+        if(formatted.length() > 0 && blacklisted == false) {
             Helper.printMessage(formatted);
         } else if(message.contains("->") && message.contains("!price")) {
             String[] parts = message.split(" ");
